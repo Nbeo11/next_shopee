@@ -1,0 +1,23 @@
+.borderAnimated {
+  border: 2px solid transparent;
+  padding: 15px;
+  background-color: white;
+  position: relative;
+  box-sizing: border-box;
+  animation: borderAnimation 3s infinite;
+}
+
+@keyframes borderAnimation {
+  0% {
+    border-color: transparent;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  }
+  50% {
+    border-color: #bfd3e1;
+    box-shadow: 0 0 15px rgba(184, 131, 180, 0.8);
+  }
+  100% {
+    border-color: transparent;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  }
+}

@@ -1,0 +1,31 @@
+export async function POST(token) {
+  if (!token) return null;
+  try {
+    const res = await $fetch(`${url}/logout`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    return res;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export const getAllProduct = async (token, page) => {
+    if (!token) return null;
+    try {
+      const res = await $fetch(`${url}/products?page=${page}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      return res;
+    } catch (error) {
+      console.log(error);
+    }
+  };
