@@ -1,38 +1,18 @@
-'use client'
+"use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { useToast } from "react-toastify";
 
-const Products = () => {
+export default function Products() {
   const router = useRouter();
-  const toast = useToast();
 
   const [allProducts, setAllProducts] = useState([]);
-  const [allCategories, setAllCategories] = useState([]);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState(
-    router.query.category_id || ""
-  );
-  const [minPrice, setMinPrice] = useState(router.query.min_price || "");
-  const [maxPrice, setMaxPrice] = useState(router.query.max_price || "");
-  const [name, setName] = useState(router.query.name || "");
-  const [minPriceFilter, setMinPriceFilter] = useState("");
-  const [maxPriceFilter, setMaxPriceFilter] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("");
 
   // Fetch data on component mount
   useEffect(() => {
     async function fetchData() {
       try {
-        const productData = await axios.get("/api/products", {
-          params: {
-            category_id: selectedCategory,
-            min_price: minPrice,
-            max_price: maxPrice,
-            name: name,
-          },
-        });
+        const productData = await axios.get("/api/products");
         const categoryData = await axios.get("/api/categories");
         setAllProducts(productData.data);
         setAllCategories(categoryData.data);
@@ -41,45 +21,10 @@ const Products = () => {
       }
     }
     fetchData();
-  }, [selectedCategory, minPrice, maxPrice, name]);
-
-  const toggleDropdown = () => {
-    setShowDropdown(!showDropdown);
-  };
-
-  const setPrice = (min, max) => {
-    setMinPrice(min);
-    setMaxPrice(max);
-  };
-
-  const filterProduct = () => {
-    router.push({
-      pathname: "/products",
-      query: {
-        category_id: selectedCategory,
-        min_price: minPrice,
-        max_price: maxPrice,
-        name: name,
-      },
-    });
-  };
-
-  const clearPriceFilter = () => {
-    setMinPrice("");
-    setMaxPrice("");
-    setMinPriceFilter("");
-    setMaxPriceFilter("");
-    filterProduct();
-  };
-
-  const clearCategoryFilter = () => {
-    setSelectedCategory("");
-    setCategoryFilter("");
-    filterProduct();
-  };
+  });
 
   const handleImageError = (item) => {
-    toast.error("Image loading failed. Default image applied.");
+    alert("Image loading failed. Default image applied.");
     item.preview_img_path = defaultImage;
   };
 
@@ -92,9 +37,9 @@ const Products = () => {
     if (existingItem) {
       if (existingItem.quantity + 1 <= item.stock) {
         existingItem.quantity += 1;
-        toast.success("Item added to cart successfully!");
+        alert("Item added to cart successfully!");
       } else {
-        toast.error("Quantity exceeds available stock.");
+        alert("Quantity exceeds available stock.");
         return;
       }
     } else {
@@ -106,7 +51,7 @@ const Products = () => {
         name: item.name,
       };
       cart.push(cartItem);
-      toast.success("Item added to cart successfully!");
+      alert("Item added to cart successfully!");
     }
 
     sessionStorage.setItem("cartItems", JSON.stringify(cart));
@@ -134,57 +79,7 @@ const Products = () => {
               />
             </form>
           </div>
-          <div className="hover:cursor-pointer" onClick={toggleDropdown}>
-            {/* Icon SVG for dropdown */}
-          </div>
         </div>
-        {showDropdown && (
-          <div className="absolute right-0 mt-7 w-1/2 bg-[#8FD9C4] border border-gray-300 rounded shadow-lg z-20 p-4">
-            <div>
-              <label className="block text-sm font-semibold">Category</label>
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full mt-1 p-2 border border-gray-300 rounded"
-              >
-                <option value="">All Categories</option>
-                {allCategories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="mt-3">
-              <label className="block text-sm font-semibold">Price ($)</label>
-              <div className="flex gap-8 items-center">
-                <input
-                  className="px-3 w-20"
-                  value={minPrice}
-                  onChange={(e) => setMinPrice(e.target.value)}
-                  type="number"
-                  placeholder="min"
-                  min="0"
-                />
-                -
-                <input
-                  className="px-3 w-20"
-                  value={maxPrice}
-                  onChange={(e) => setMaxPrice(e.target.value)}
-                  type="number"
-                  placeholder="max"
-                  min="0"
-                />
-              </div>
-            </div>
-            <button
-              onClick={filterProduct}
-              className="bg-[#5e9e8c] text-xs px-2 py-1 mt-5 hover:text-white hover:bg-[#366357] hover:scale-105 transition-all"
-            >
-              Filter
-            </button>
-          </div>
-        )}
       </div>
       <div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-x-7 gap-y-10">
@@ -195,12 +90,12 @@ const Products = () => {
                 className="rounded-md shadow-lg flex flex-col gap-1 relative h-auto hover:scale-105 hover:cursor-pointer transition-all"
               >
                 <div className="relative w-full h-32">
-                  <img
+                  {/* <img
                     src={item.preview_img_path}
                     alt="Product Image"
                     className="w-full h-full object-cover shadow-md transition-all duration-300 hover:brightness-90 hover:blur-sm"
                     onError={() => handleImageError(item)}
-                  />
+                  /> */}
                 </div>
                 <div className="px-3 pb-3 pt-2 flex flex-col gap-1">
                   <div className="text-base font-bold truncate">
@@ -233,4 +128,3 @@ const Products = () => {
   );
 };
 
-export default Products;

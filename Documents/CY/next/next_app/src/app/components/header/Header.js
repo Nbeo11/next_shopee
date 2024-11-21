@@ -3,16 +3,22 @@ import Image from "next/image";
 import Link from "next/link";
 import logo from "../../assets/images/logo.png";
 import logoutimg from "../../assets/images/logout.png";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useUtils } from "@/utils/useUtils";
 
 export default function Header() {
-  const token = useUtils().getCookieOnClient("token");
-  const [isDropdownVisible, setDropdownVisible] = useState(false);
-  const [totalProduct, setTotalProduct] = useState(0); // Số lượng sản phẩm trong giỏ
-  const [userName, setUserName] = useState("John Doe"); // Tên người dùng
+  const { getCookieOnClient, deleteCookieOnClient } = useUtils();
   const router = useRouter();
+
+  const [token, setToken] = useState(getCookieOnClient("token"));
+  const [isDropdownVisible, setDropdownVisible] = useState(false);
+  const [totalProduct, setTotalProduct] = useState(0);
+  const [userName, setUserName] = useState("John Doe");
+
+  useEffect(() => {
+    setToken(getCookieOnClient("token"));
+  }, [getCookieOnClient]);
 
   const navigateToCart = () => {
     router.push("/cart");
@@ -23,8 +29,8 @@ export default function Header() {
   };
 
   const logout = () => {
-    // Thực hiện logout logic
-    setToken(false);
+    deleteCookieOnClient("token");
+    setToken(null);
     router.push("/login");
   };
 
@@ -64,16 +70,16 @@ export default function Header() {
           {token && (
             <ul className="lg:flex gap-x-7 max-lg:space-y-3 max-lg:fixed max-lg:bg-white max-lg:w-1/2 max-lg:min-w-[300px] max-lg:top-0 max-lg:left-0 max-lg:p-6 max-lg:h-full max-lg:shadow-md max-lg:overflow-auto z-50">
               <li
-                onClick={() => navigateTo("/")}
-                className={`hover:text-[#007bff] font-bold block text-base ${
+                onClick={() => router.push("/")}
+                className={`hover:text-[#007bff] font-bold block hover:cursor-pointer text-base ${
                   router.pathname === "/" ? "text-[#007bff]" : "text-gray-600"
                 }`}
               >
                 <a>Home Page</a>
               </li>
               <li
-                onClick={() => navigateTo("/products")}
-                className={`hover:text-[#007bff] font-bold block text-base ${
+                onClick={() => router.push("/products")}
+                className={`hover:text-[#007bff] font-bold block hover:cursor-pointer text-base ${
                   router.pathname === "/products"
                     ? "text-[#007bff]"
                     : "text-gray-600"
@@ -82,8 +88,8 @@ export default function Header() {
                 <a>View products</a>
               </li>
               <li
-                onClick={() => navigateTo("/orders")}
-                className={`hover:text-[#007bff] font-bold block text-base ${
+                onClick={() => router.push("/orders")}
+                className={`hover:text-[#007bff] font-bold block hover:cursor-pointer text-base ${
                   router.pathname === "/orders"
                     ? "text-[#007bff]"
                     : "text-gray-600"
