@@ -4,14 +4,30 @@ import logo from "../../assets/images/logo.png";
 import image from "../../assets/images/image.png";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { signup } from "@/services/authService";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
   const router = useRouter();
 
-  const userLogin = (e) => {
+  const userSignup = async (e) => {
     e.preventDefault();
-    router.push("/");
+    if (!email || !password || !name) {
+      alert("Please fill out the name, email and password fields");
+      return;
+    }
+    try {
+      const resp = await signup(name, email, password);
+      if (resp.data) {
+        alert("Đăng ký thành công")
+      } else {
+        alert("Invalid login credentials");
+      }
+    } catch (error) {
+      alert("Something went wrong. Please try again.");
+    }
+    router.push("/login");
   };
 
   return (
@@ -73,24 +89,27 @@ export default function Login() {
                 </div>
               </div>
 
-              <form onSubmit={userLogin} className="mx-auto max-w-xs">
+              <form onSubmit={userSignup} className="mx-auto max-w-xs">
                 <input
                   className="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
                   type="email"
                   placeholder="Email"
                   v-model="email"
+                  onChange={(e) => setEmail(e.target.value)}
                 />
                 <input
                   className="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-5"
                   type="name"
                   placeholder="Name"
                   v-model="name"
+                  onChange={(e) => setName(e.target.value)}
                 />
                 <input
                   className="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-5"
                   type="password"
                   placeholder="Password"
                   v-model="password"
+                  onChange={(e) => setPassword(e.target.value)}
                 />
                 <button className="mt-5 tracking-wide font-semibold  bg-[#78BCC4] text-gray-900 w-full py-4 rounded-lg hover:bg-[#3c938a] hover:text-white transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none">
                   SignUp

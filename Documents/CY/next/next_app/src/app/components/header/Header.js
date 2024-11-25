@@ -6,6 +6,7 @@ import logoutimg from "../../assets/images/logout.png";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useUtils } from "@/utils/useUtils";
+import { userInfo } from "@/services/authService";
 
 export default function Header() {
   const { getCookieOnClient, deleteCookieOnClient } = useUtils();
@@ -14,22 +15,34 @@ export default function Header() {
   const [token, setToken] = useState(getCookieOnClient("token"));
   const [isDropdownVisible, setDropdownVisible] = useState(false);
   const [totalProduct, setTotalProduct] = useState(0);
-  const [userName, setUserName] = useState("John Doe");
+  const [userName, setUserName] = useState("");
 
   useEffect(() => {
-    setToken(getCookieOnClient("token"));
-  }, [getCookieOnClient]);
+    const tokenFromCookie = getCookieOnClient("token");
+    setToken(tokenFromCookie);
+    const cartItems = JSON.parse(sessionStorage.getItem("cartItems")) || [];
+    const totalUniqueProducts = new Set(cartItems.map((item) => item.productId))
+      .size;
+    setTotalProduct(totalUniqueProducts);
+  });
 
+  const getInfo = async () => {
+    const data = await userInfo();
+    setUserName(data.data.name);
+    console.log(data.data.name);
+  };
   const navigateToCart = () => {
     router.push("/cart");
   };
 
   const toggleDropdown = () => {
+    getInfo();
     setDropdownVisible(!isDropdownVisible);
   };
 
   const logout = () => {
     deleteCookieOnClient("token");
+    sessionStorage.removeItem("cartItems");
     setToken(null);
     router.push("/login");
   };
@@ -41,8 +54,8 @@ export default function Header() {
     <div className="flex shadow-md py-1 px-4 sm:px-10 bg-white font-sans min-h-[50px] tracking-wide relative z-50">
       <div className="flex flex-wrap items-center justify-between gap-4 w-full">
         <Link href="/" passHref>
-          <Image
-            src={logo}
+          <img
+            src="/images/logo.png"
             alt="logo"
             className="w-20 shadow-lg hover:cursor-pointer"
           />
@@ -78,7 +91,7 @@ export default function Header() {
                 <a>Home Page</a>
               </li>
               <li
-                onClick={() => router.push("/products")}
+                onClick={() => router.push("/product")}
                 className={`hover:text-[#007bff] font-bold block hover:cursor-pointer text-base ${
                   router.pathname === "/products"
                     ? "text-[#007bff]"

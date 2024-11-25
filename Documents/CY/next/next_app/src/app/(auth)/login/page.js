@@ -5,7 +5,7 @@ import logo from "../../assets/images/logo.png";
 import image from "../../assets/images/image.png";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { axiosInstance } from "@/services/Axios";
+import { login } from "@/services/authService";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,22 +18,15 @@ export default function Login() {
       alert("Please fill out the email and password fields");
       return;
     }
-
-    const data = {
-      email: email,
-      password: password,
-    };
-
     try {
-      const resp = await axiosInstance.post("api/v1/login", data);
+      const resp = await login(email, password);
       if (resp.data.token) {
-        document.cookie = `token=${resp.data.token}; path=/; max-age=3600`; 
-        router.push("/"); 
+        document.cookie = `token=${resp.data.token}; path=/; max-age=3600`;
+        router.push("/");
       } else {
         alert("Invalid login credentials");
       }
     } catch (error) {
-      console.error("Login error:", error);
       alert("Something went wrong. Please try again.");
     }
   };
@@ -43,7 +36,12 @@ export default function Login() {
       <div className="max-w-screen-xl m-0 sm:m-10 bg-white shadow sm:rounded-lg flex justify-center flex-1 shadow-lg">
         <div className="lg:w-1/2 xl:w-5/12 p-6 sm:p-12">
           <div>
-          <Image src={logo} alt="logo" className="w-40 mx-auto hover:cursor-pointer" onClick={() => router.push("/")} />
+            <Image
+              src={logo}
+              alt="logo"
+              className="w-40 mx-auto hover:cursor-pointer"
+              onClick={() => router.push("/")}
+            />
           </div>
           <div className="mt-12 flex flex-col items-center">
             <h1 className="text-2xl xl:text-3xl font-extrabold">Login</h1>

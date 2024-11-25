@@ -28,3 +28,17 @@ body {
 .content {
   flex-grow: 1;
 }
+
+/* styles/globals.css hoặc styles/ThankYouPage.module.css */
+.animated-gif {
+  animation: slide-left 5s linear infinite;
+}
+
+@keyframes slide-left {
+  0% {
+    right: -100%;
+  }
+  100% {
+    right: 100%;
+  }
+}
